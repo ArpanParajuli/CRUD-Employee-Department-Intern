@@ -1,32 +1,42 @@
-@model IEnumerable<Department>
+@model IEnumerable<Company_WebApp.Models.Department>
 
-<h2>Department List</h2>
+@{
+    ViewData["Title"] = "Index";
+}
 
-<table class="table table-bordered">
+<h1>Index</h1>
+
+<p>
+    <a asp-action="Create">Create New</a>
+</p>
+<table class="table">
     <thead>
         <tr>
-            <th>ID</th>
-            <th>Name</th>
-            <th>Descriptions</th>
+            <th>
+                @Html.DisplayNameFor(model => model.Name)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Description)
+            </th>
+            <th></th>
         </tr>
     </thead>
     <tbody>
-        @foreach (var department in Model)
-        {
-            <tr>
-                <td>@department.Id</td>
-                <td>@department.Name</td>
-                <td>@department.Description</td>
-                <td>
-                    <a asp-action="Edit" asp-route-id="@department.Id" class="btn btn-warning btn-sm">
-                        Edit
-                    </a>
-                    <a asp-action="Delete" asp-route-id="@department.Id" class="btn btn-danger btn-sm"
-                       onclick="return confirm('Are you sure you want to delete this employee?');">
-                        Delete
-                    </a>
-                </td>
-            </tr>
-        }
+@foreach (Department item in Model) {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.Name)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Description)
+            </td>
+            <td>
+                <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
+                <form asp-action="Delete" asp-route-id="@item.Id" method="post" style="display:inline">
+                    <button type="submit" class="btn btn-sm btn-danger">Delete</button>
+                </form>
+            </td>
+        </tr>
+}
     </tbody>
 </table>

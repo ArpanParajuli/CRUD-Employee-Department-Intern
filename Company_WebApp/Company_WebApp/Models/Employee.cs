@@ -22,6 +22,7 @@ namespace Company_WebApp.Models
 
        
          public int DepartmentId { get; set; }
+
         public Department Department { get; set; } = null!;
 
     }

@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Company_WebApp.Models;
 using Company_WebApp.Repositories;
+using Microsoft.AspNetCore.Mvc.Rendering;
 
 namespace Company_WebApp.Controllers
 {
@@ -8,50 +9,90 @@ namespace Company_WebApp.Controllers
     {
 
         private readonly IEmployeeRepository employeeRepository;
-        public EmployeeController(IEmployeeRepository employeeRepository)
+        private readonly IDepartmentRepository departmentRepository;
+        public EmployeeController(IEmployeeRepository employeeRepository, IDepartmentRepository departmentRepository)
         {
             this.employeeRepository = employeeRepository;
+            this.departmentRepository = departmentRepository;
         }
-        
+
+
+        [HttpGet]
         public IActionResult Index()
         {
             var Employee1 = employeeRepository.GetEmployee();
+
             return View(Employee1);
         }
 
+        [HttpGet]
         public IActionResult Create()
         {
-            var Employee1 = employeeRepository.CreateEmployee();
-            return View(Employee1);
+            var departments = departmentRepository.GetDepartment();
+            ViewBag.DepartmentId = new SelectList(departments, "Id", "Name");
+            return View();
+        }
+
+
+        [HttpPost]
+        public IActionResult Create(Employee employee)
+        {
+            Console.WriteLine("Received Create employye request!");
+    
+                employeeRepository.CreateEmployee(employee);
+                return RedirectToAction("Index");
         }
 
 
 
-        public IActionResult Edit()
+        //[HttpGet]
+        //public IActionResult Edit()
+        //{
+        //    return View();
+        //}
+
+
+
+        [HttpPost]
+        public IActionResult Edit(Employee employee)
         {
-            var Employee1 = new Employee
+
+            if (ModelState.IsValid)
             {
-                Id = 1,
-                Address = "Nayamill",
-                Email = "arpanparajuli@gmail.com",
-                Name = "Arpan Parajuli",
-                Phone = "9867710675"
-            };
-            return View(Employee1);
+                var isSuccess = employeeRepository.UpdateEmployee(employee);
+
+                if (isSuccess == null)
+                {
+                    return RedirectToPage("index");
+                }
+            }
+
+
+            return RedirectToPage("index");
         }
 
 
-         public IActionResult Delete()
-        {
-            var Employee1 = new Employee
+        //[HttpGet]
+        //public IActionResult Delete()
+        //{
+        //    return View();
+        //}
+
+
+
+        [HttpPost]
+
+        public IActionResult Delete(int id)
+        {  
+         
+            var isSuccess = employeeRepository.DeleteEmployee(id);
+
+            if (isSuccess == false)
             {
-                Id = 1,
-                Address = "Nayamill",
-                Email = "arpanparajuli@gmail.com",
-                Name = "Arpan Parajuli",
-                Phone = "9867710675"
-            };
-            return View(Employee1);
+                return RedirectToPage("index");
+            }
+
+            return View();
         }
     }
 }

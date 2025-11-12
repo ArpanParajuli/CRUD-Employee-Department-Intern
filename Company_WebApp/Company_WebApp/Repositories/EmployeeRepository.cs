@@ -16,29 +16,41 @@ namespace Company_WebApp.Repositories
 
         public List<Employee> GetEmployee()
         {
-            var employeeobj = EmployeeDbContext.Employees.AsNoTracking().ToList();
+            var employeeobj = EmployeeDbContext.Employees.Include(e => e.Department).AsNoTracking().ToList();
             return employeeobj;
         }
 
-        public Employee CreateEmployee()
+        public Employee CreateEmployee(Employee employee)
         {
-            var Employee1 = new Employee { Id = 1, Address = "awdawdawd", Email = "awdadawd@adaw", Name = "dawada", Phone = "wdwadada" };
-            return Employee1;
+            EmployeeDbContext.Employees.Add(employee);
+            EmployeeDbContext.SaveChanges();
+            return employee;
         }
 
 
-        public Employee UpdateEmployee()
+        public Employee UpdateEmployee(Employee employee)
         {
-            var Employee1 = new Employee { Id = 1, Address = "awdawdawd", Email = "awdadawd@adaw", Name = "dawada", Phone = "wdwadada" };
-            return Employee1;
+            EmployeeDbContext.Employees.Update(employee);
+            EmployeeDbContext.SaveChanges();
+            return employee;
         }
-        
 
 
-         public Employee  DeleteEmployee()
+
+        public bool DeleteEmployee(int EmployeeId)
         {
-            var Employee1 = new Employee { Id = 1, Address = "awdawdawd", Email = "awdadawd@adaw", Name = "dawada", Phone = "wdwadada" };
-            return Employee1;
+            var isEmployeeExists = EmployeeDbContext.Employees.FirstOrDefault(e => e.Id == EmployeeId);
+
+            if (isEmployeeExists == null)
+            {
+                return false;
+            }
+
+            EmployeeDbContext.Employees.Remove(isEmployeeExists);
+
+            EmployeeDbContext.SaveChanges();
+
+            return true;
         }
     }
 }

@@ -20,11 +20,46 @@ namespace Company_WebApp.Repositories
             var Department_obj = new Department { Id = 1, Description = "For food management!", Name = "Food Department" };
             return Department_obj;
         }
-        
+
         public List<Department> GetDepartment()
         {
             var Department_obj = DepartmentDbContext.Departments.AsNoTracking().ToList();
             return Department_obj;
         }
+
+        public void AddDepartment(Department department)
+        {
+            DepartmentDbContext.Departments.Add(department);
+            DepartmentDbContext.SaveChanges();
+        }
+
+        public void UpdateDepartment(Department department)
+        {
+            DepartmentDbContext.Departments.Update(department);
+            DepartmentDbContext.SaveChanges();
+        }
+        
+          public bool DeleteDepartment(int DepartmentId)
+        {
+            var findDeparment = GetDepartmentById(DepartmentId);
+             if (findDeparment == null)
+             { 
+              return false;
+             }
+
+
+            DepartmentDbContext.Departments.Remove(findDeparment);
+
+            DepartmentDbContext.SaveChanges();
+        
+            return true;
+        }
+
+
+        public Department GetDepartmentById(int id)
+        {
+            return DepartmentDbContext.Departments.FirstOrDefault(d => d.Id == id);
+        }
+
     }
 }
