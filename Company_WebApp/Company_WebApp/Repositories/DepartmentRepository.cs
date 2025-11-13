@@ -14,51 +14,42 @@ namespace Company_WebApp.Repositories
             this.DepartmentDbContext = DepartmentDbContext;
         }
 
-
-        public Department CreateDepartment()
+        public IQueryable<Department> GetDepartment()
         {
-            var Department_obj = new Department { Id = 1, Description = "For food management!", Name = "Food Department" };
-            return Department_obj;
+            IQueryable<Department> GetAllDepartments =  DepartmentDbContext.Departments.AsNoTracking();
+            return GetAllDepartments;
         }
 
-        public List<Department> GetDepartment()
+        public async Task AddDepartment(Department department)
         {
-            var Department_obj = DepartmentDbContext.Departments.AsNoTracking().ToList();
-            return Department_obj;
+           await DepartmentDbContext.Departments.AddAsync(department);
+           await DepartmentDbContext.SaveChangesAsync();
         }
 
-        public void AddDepartment(Department department)
+        public async Task UpdateDepartment(Department department)
         {
-            DepartmentDbContext.Departments.Add(department);
-            DepartmentDbContext.SaveChanges();
-        }
-
-        public void UpdateDepartment(Department department)
-        {
-            DepartmentDbContext.Departments.Update(department);
-            DepartmentDbContext.SaveChanges();
+            DepartmentDbContext.Departments.Update(department); // update method is sync operation in db
+            await DepartmentDbContext.SaveChangesAsync();
         }
         
-          public bool DeleteDepartment(int DepartmentId)
+        public async Task<bool> DeleteDepartment(int DepartmentId)
         {
-            var findDeparment = GetDepartmentById(DepartmentId);
-             if (findDeparment == null)
-             { 
-              return false;
-             }
+            var findDeparment = await GetDepartmentById(DepartmentId);
+             if (findDeparment is null)  return false; // == null = is null
+    
+            DepartmentDbContext.Departments.Remove(findDeparment); // remove() is also sync
 
-
-            DepartmentDbContext.Departments.Remove(findDeparment);
-
-            DepartmentDbContext.SaveChanges();
+            await DepartmentDbContext.SaveChangesAsync();
         
             return true;
         }
 
 
-        public Department GetDepartmentById(int id)
+        public async Task<Department?> GetDepartmentById(int id) // might return null or data 
         {
-            return DepartmentDbContext.Departments.FirstOrDefault(d => d.Id == id);
+            return await DepartmentDbContext.Departments
+            .AsNoTracking() // for performance improve
+            .FirstOrDefaultAsync(d => d.Id == id);
         }
 
     }

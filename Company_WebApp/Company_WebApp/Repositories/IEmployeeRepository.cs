@@ -4,13 +4,10 @@ namespace Company_WebApp.Repositories
 {
     public interface IEmployeeRepository
     {
-        Employee CreateEmployee(Employee employee);
-        List<Employee> GetEmployee();
-
-        bool DeleteEmployee(int EmployeeId);
-
-         Employee UpdateEmployee(Employee employee);
-
+        Task CreateEmployee(Employee employee);
+        IQueryable<Employee> GetEmployee();
+        Task<bool> DeleteEmployee(int EmployeeId);
+        Task UpdateEmployee(Employee employee);
 
     }
 }

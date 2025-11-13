@@ -4,14 +4,10 @@ namespace Company_WebApp.Repositories
 {
     public interface IDepartmentRepository
     {
-        Department CreateDepartment();
-        List<Department> GetDepartment();
-        bool DeleteDepartment(int DepartmentId);
-
-         void UpdateDepartment(Department department);
-
-        void AddDepartment(Department department);
-
-        Department GetDepartmentById(int id);
+        IQueryable<Department> GetDepartment();
+        Task<bool> DeleteDepartment(int DepartmentId);
+        Task UpdateDepartment(Department department);
+        Task AddDepartment(Department department);
+        Task<Department?> GetDepartmentById(int id);
     }
 }

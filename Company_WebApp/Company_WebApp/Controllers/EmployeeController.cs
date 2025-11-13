@@ -2,6 +2,8 @@
 using Company_WebApp.Models;
 using Company_WebApp.Repositories;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using System.Threading.Tasks;
+using Microsoft.EntityFrameworkCore;
 
 namespace Company_WebApp.Controllers
 {
@@ -18,15 +20,14 @@ namespace Company_WebApp.Controllers
 
 
         [HttpGet]
-        public IActionResult Index()
+        public async Task<IActionResult> Index()
         {
-            var Employee1 = employeeRepository.GetEmployee();
-
-            return View(Employee1);
+            var AllEmployeesDetails = await employeeRepository.GetEmployee().ToListAsync();
+            return View(AllEmployeesDetails);
         }
 
         [HttpGet]
-        public IActionResult Create()
+        public async Task<IActionResult> Create()
         {
             var departments = departmentRepository.GetDepartment();
             ViewBag.DepartmentId = new SelectList(departments, "Id", "Name");
@@ -35,11 +36,11 @@ namespace Company_WebApp.Controllers
 
 
         [HttpPost]
-        public IActionResult Create(Employee employee)
+        public async Task<IActionResult> Create(Employee employee)
         {
             Console.WriteLine("Received Create employye request!");
-    
-                employeeRepository.CreateEmployee(employee);
+             
+                await employeeRepository.CreateEmployee(employee);
                 return RedirectToAction("Index");
         }
 
@@ -54,21 +55,16 @@ namespace Company_WebApp.Controllers
 
 
         [HttpPost]
-        public IActionResult Edit(Employee employee)
+        public async Task<IActionResult> Edit(Employee employee)
         {
 
             if (ModelState.IsValid)
             {
-                var isSuccess = employeeRepository.UpdateEmployee(employee);
-
-                if (isSuccess == null)
-                {
-                    return RedirectToPage("index");
-                }
+                 await employeeRepository.UpdateEmployee(employee);
+                 return RedirectToPage("index");
             }
 
-
-            return RedirectToPage("index");
+            return View("index");
         }
 
 
@@ -82,10 +78,10 @@ namespace Company_WebApp.Controllers
 
         [HttpPost]
 
-        public IActionResult Delete(int id)
+        public async Task<ActionResult> Delete(int id)
         {  
          
-            var isSuccess = employeeRepository.DeleteEmployee(id);
+            var isSuccess = await employeeRepository.DeleteEmployee(id);
 
             if (isSuccess == false)
             {

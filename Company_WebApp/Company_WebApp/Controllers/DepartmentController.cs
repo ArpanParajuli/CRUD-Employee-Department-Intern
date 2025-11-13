@@ -1,6 +1,9 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Company_WebApp.Repositories;
 using Company_WebApp.Models;
+using System.Threading.Tasks;
+using Microsoft.Identity.Client;
+using Microsoft.EntityFrameworkCore;
 
 namespace Company_WebApp.Controllers
 {
@@ -11,12 +14,11 @@ namespace Company_WebApp.Controllers
         {
             this.departmentRepository = departmentRepository;
         }
-        public IActionResult Index()
+        public async Task<IActionResult> Index()
         {
-            var AllDepartment = departmentRepository.GetDepartment();
+            var AllDepartment = await departmentRepository.GetDepartment().ToListAsync();
             return View(AllDepartment);
         }
-
 
 
         [HttpGet]
@@ -26,15 +28,15 @@ namespace Company_WebApp.Controllers
         }
 
         [HttpPost]
-        public IActionResult Create(Department department)
+        public async Task<IActionResult> Create(Department department)
         {
             if (ModelState.IsValid)
             {
-                departmentRepository.AddDepartment(department);
+                await departmentRepository.AddDepartment(department);
                 return RedirectToAction("Index");
             }
-            // return View(department);
-            return RedirectToAction("Index");
+
+           return View(department); // returining view to show errors to client
         }
 
 
@@ -47,30 +49,22 @@ namespace Company_WebApp.Controllers
 
 
         [HttpPost]
-        public IActionResult Edit(Department department)
+        public async Task<IActionResult> Edit(Department department)
         {
             if (ModelState.IsValid)
             {
-                departmentRepository.UpdateDepartment(department);
+                await departmentRepository.UpdateDepartment(department);
                 return RedirectToAction("Index");
             }
 
-            return RedirectToAction("Index");
+            return View(department); // returining view to show errors to client
         }
 
 
-
-        //[HttpGet]
-        //public IActionResult Delete()
-        //{
-        //    return View();
-        //}
-
-
         [HttpPost]
-        public IActionResult Delete(int id)
+        public async Task<IActionResult> Delete(int id)
         {
-            var success = departmentRepository.DeleteDepartment(id);
+            var success =  await departmentRepository.DeleteDepartment(id);
             if (!success)
                 return NotFound();
 

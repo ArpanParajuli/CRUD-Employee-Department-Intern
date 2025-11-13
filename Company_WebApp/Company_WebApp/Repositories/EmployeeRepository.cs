@@ -14,41 +14,39 @@ namespace Company_WebApp.Repositories
             this.EmployeeDbContext = EmployeeDbContext;
         }
 
-        public List<Employee> GetEmployee()
+        public IQueryable<Employee> GetEmployee()
         {
-            var employeeobj = EmployeeDbContext.Employees.Include(e => e.Department).AsNoTracking().ToList();
-            return employeeobj;
+             IQueryable<Employee> GetAllEmployees = EmployeeDbContext
+             .Employees.Include(e => e.Department)
+             .AsNoTracking();
+            return GetAllEmployees;
         }
 
-        public Employee CreateEmployee(Employee employee)
+        public async Task CreateEmployee(Employee employee)
         {
-            EmployeeDbContext.Employees.Add(employee);
-            EmployeeDbContext.SaveChanges();
-            return employee;
-        }
-
-
-        public Employee UpdateEmployee(Employee employee)
-        {
-            EmployeeDbContext.Employees.Update(employee);
-            EmployeeDbContext.SaveChanges();
-            return employee;
+           await EmployeeDbContext.Employees.AddAsync(employee); // sync
+           await EmployeeDbContext.SaveChangesAsync();
+    
         }
 
 
-
-        public bool DeleteEmployee(int EmployeeId)
+        public async Task UpdateEmployee(Employee employee)
         {
-            var isEmployeeExists = EmployeeDbContext.Employees.FirstOrDefault(e => e.Id == EmployeeId);
+            EmployeeDbContext.Employees.Update(employee); // sync task
+            await EmployeeDbContext.SaveChangesAsync();
+        }
 
-            if (isEmployeeExists == null)
-            {
-                return false;
-            }
+
+
+        public async Task<bool> DeleteEmployee(int EmployeeId)
+        {
+            var isEmployeeExists = await EmployeeDbContext.Employees.FirstOrDefaultAsync(e => e.Id == EmployeeId);
+
+            if (isEmployeeExists is null) return false;
 
             EmployeeDbContext.Employees.Remove(isEmployeeExists);
 
-            EmployeeDbContext.SaveChanges();
+            await EmployeeDbContext.SaveChangesAsync();
 
             return true;
         }
